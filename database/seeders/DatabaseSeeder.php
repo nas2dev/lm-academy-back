@@ -8,6 +8,9 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\UserListSeeder;
+use Database\Seeders\CourseModuleSeeder;
+use Database\Seeders\CourseSectionSeeder;
+use Database\Seeders\CourseMaterialSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,7 +22,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserListSeeder::class,
             UserSeeder::class,
-            CourseSeeder::class
+            CourseSeeder::class,
+            CourseModuleSeeder::class,
+            CourseSectionSeeder::class,
+            CourseMaterialSeeder::class,
         ]);
     }
 }

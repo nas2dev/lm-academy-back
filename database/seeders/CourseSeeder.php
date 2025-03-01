@@ -22,7 +22,7 @@ class CourseSeeder extends Seeder
                 'status' => 1,
                 'created_by' => 1,
                 'updated_by' => null,
-                'duration' => 600,
+                'duration' => 600 * 60,
                 'nr_of_files' => 5,
                 'created_at' => $now,
                 'updated_at' => $now,
