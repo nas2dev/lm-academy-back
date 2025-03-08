@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id');
             $table->string('title');
             $table->text('description')->nullable();
-            $table->unsignedInteger('nr_of_files')->defult(0);
-            $table->unsignedInteger('duration')->comment('In Seconds')->defult(0);
+            $table->unsignedInteger('nr_of_files')->default(0);
+            $table->unsignedInteger('duration')->comment('In Seconds')->default(0);
             $table->timestamps();
 
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
