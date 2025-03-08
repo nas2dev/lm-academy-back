@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('intro_video_url', 1023)->nullable();
             $table->string('intro_image_url')->nullable();
             $table->tinyInteger('status')->default(0); // 0 pending 1 completed
-            $table->unsignedInteger('nr_of_files')->defult(0);
-            $table->unsignedInteger('duration')->comment('In Seconds')->defult(0);
+            $table->unsignedInteger('nr_of_files')->default(0);
+            $table->unsignedInteger('duration')->comment('In Seconds')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
