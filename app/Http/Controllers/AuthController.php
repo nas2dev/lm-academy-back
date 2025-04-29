@@ -169,17 +169,22 @@ class AuthController extends Controller
                 $valid_emails = [];
                 $existing_users = [];
 
+                // First, filter out invalid email formats
                 foreach ($invited_users as $email) {
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $invalid_emails[] = $email;
                     } else {
-                        // Check if user already exists
-                        if (User::where('email', $email)->exists()) {
-                            $existing_users[] = $email;
-                        } else {
-                            $valid_emails[] = $email;
-                        }
+                        $valid_emails[] = $email;
                     }
+                }
+
+                // Then do a single query to check existing users
+                if (!empty($valid_emails)) {
+                    $existingUsersQuery = User::whereIn('email', $valid_emails)->pluck('email')->toArray();
+                    $existing_users = $existingUsersQuery;
+                    
+                    // Remove existing users from valid emails
+                    $valid_emails = array_diff($valid_emails, $existing_users);
                 }
 
                 $invalid_emails = implode(', ', $invalid_emails);
