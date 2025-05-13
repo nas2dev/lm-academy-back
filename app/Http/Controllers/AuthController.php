@@ -30,7 +30,7 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized', 'message' => "Your email or password is invalid"], 401);
         }
 
         return $this->respondWithToken($token);
@@ -82,7 +82,14 @@ class AuthController extends Controller
      */
     public function userProfile()
     {
-        return response()->json(auth()->user()); 
+        $user_id = auth()->id();
+
+        $user = User::whereId($user_id)->with("roles")->first();
+
+        return response()->json([
+            "user" => $user
+        ]);
+        // return response()->json(auth()->user()); 
     }
 
     /**
@@ -141,10 +148,16 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+
+        $user_id = auth()->id();
+
+        $user = User::whereId($user_id)->with("roles")->first();
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => $user
         ]);
     }
 
@@ -169,17 +182,22 @@ class AuthController extends Controller
                 $valid_emails = [];
                 $existing_users = [];
 
+                // First, filter out invalid email formats
                 foreach ($invited_users as $email) {
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         $invalid_emails[] = $email;
                     } else {
-                        // Check if user already exists
-                        if (User::where('email', $email)->exists()) {
-                            $existing_users[] = $email;
-                        } else {
-                            $valid_emails[] = $email;
-                        }
+                        $valid_emails[] = $email;
                     }
+                }
+
+                // Then do a single query to check existing users
+                if (!empty($valid_emails)) {
+                    $existingUsersQuery = User::whereIn('email', $valid_emails)->pluck('email')->toArray();
+                    $existing_users = $existingUsersQuery;
+                    
+                    // Remove existing users from valid emails
+                    $valid_emails = array_diff($valid_emails, $existing_users);
                 }
 
                 $invalid_emails = implode(', ', $invalid_emails);
