@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserListController;
 
 
 Route::controller(AuthController::class)->prefix("auth")->middleware('api')->group(function () {
@@ -23,6 +24,22 @@ Route::controller(AuthController::class)->prefix("auth")->middleware('api')->gro
 
    
     // kriju shume api
+});
+
+Route::controller(UserListController::class)->prefix("lists")->middleware('api')->group(function () {
+    Route::middleware('jwt.auth.token')->group(function () {
+        Route::get('/', 'index')->name('lists.index');
+        Route::post("store", "store")->name("lists.store");
+        Route::patch("update-list-name/{id}", "updateListName")->name("lists.updateListName");
+        Route::delete("/{id}/delete", "destroy")->name("lists.destroy");
+        
+        Route::get('/{id}/users', 'getUsersInList')->name('lists.getUsersInList');
+        Route::get('/{id}/available-users', 'getAllAvailableUsers')->name('lists.getAllAvailableUsers');
+        Route::post("{id}/add-users", "addUsersToList")->name("lists.addUsersToList");
+        Route::delete("/{id}/remove-user", "removeUserFromList")->name("lists.removeUserFromList");
+        
+        Route::get('/{id}/pick-random-winner', 'pickRandomWinner')->name('lists.pickRandomWinner');
+    });
 });
 
 // Route::get('test-api-endpoint', function() {
